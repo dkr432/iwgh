@@ -234,3 +234,46 @@ st.plotly_chart(fig7, use_container_width=True)
 
 st.markdown("**이 그래프로 알 수 있는 것:**")
 st.info("여기에 학생이 직접 그래프를 보고 알게 된 점을 한 문장으로 적어보세요.")
+
+st.divider()
+
+# =========================================================
+# 그래프 8: 제작 국가별 총 관객수 막대그래프
+# =========================================================
+st.header("8. 제작 국가별 총 관객수")
+
+nation_audi = (
+    df.groupby("nation")
+    .agg(total_audi_sum=("total_audi", "sum"), movie_count=("movieNm", "count"))
+    .reset_index()
+    .sort_values("total_audi_sum", ascending=False)
+)
+
+fig8 = px.bar(
+    nation_audi,
+    x="nation",
+    y="total_audi_sum",
+    hover_data={"movie_count": True, "total_audi_sum": ":,"},
+    title="제작 국가별 총 관객수 합계"
+)
+
+fig8.update_layout(
+    xaxis_title="제작 국가",
+    yaxis_title="총 관객수 합계"
+)
+
+fig8.update_traces(
+    hovertemplate="<b>%{x}</b><br>총 관객수: %{y:,}명<br>영화 편수: %{customdata[0]}편<extra></extra>"
+)
+
+st.plotly_chart(fig8, use_container_width=True)
+
+top_nation_row = nation_audi.iloc[0]
+
+st.markdown("**이 그래프로 알 수 있는 것:**")
+st.info(
+    f"""
+    제작 국가 중 총 관객수가 가장 많은 나라는 **{top_nation_row['nation']}**이며,
+    이 국가의 영화들이 모은 총 관객수는 **{int(top_nation_row['total_audi_sum']):,}명**입니다.
+    """
+)
